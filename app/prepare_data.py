@@ -1,5 +1,5 @@
+#!/bin/bash
 from pathvalidate import sanitize_filename
-from tqdm import tqdm
 from pyspark.sql import SparkSession
 
 
@@ -24,4 +24,4 @@ def create_doc(row):
 df.foreach(create_doc)
 
 
-# df.write.csv("/index/data", sep = "\t")
+df.write.csv("/index/data", sep = "\t")
