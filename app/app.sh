@@ -21,7 +21,5 @@ bash prepare_data.sh
 # Run the indexer
 bash index.sh /index/data
 
-tail -f /dev/null
-
 # Run the ranker
-bash search.sh "this is a query!" 
+# bash search.sh "this is a query!" 
