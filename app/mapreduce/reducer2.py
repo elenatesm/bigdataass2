@@ -1,9 +1,11 @@
 import sys
+
 sys.path.insert(0, 'python_libs.zip')
 
 from cassandra.cluster import Cluster
-CASSANDRA_ENABLED = True
 
+# Set up Cassandra connection
+CASSANDRA_ENABLED = True
 cluster = Cluster(['cassandra-server'])
 session = cluster.connect('search_engine')
 
@@ -13,6 +15,7 @@ doc_ids = set()
 for line in sys.stdin:
     word, doc_id = line.strip().split("\t")
 
+    # When encountering a new term, insert the previous term's DF into Cassandra
     if word != current_word:
         if current_word is not None:
             df = len(doc_ids)
@@ -22,13 +25,15 @@ for line in sys.stdin:
                     (current_word, df)
                 )
             else:
-                print(f"{current_word}\t{df}")  # For local debug
+                print(f"{current_word}\t{df}")  # Print to stdout for debugging
+
+        # Start tracking the new term
         current_word = word
         doc_ids = set()
 
     doc_ids.add(doc_id)
 
-# Final term
+# Insert the last term's DF after the loop ends
 if current_word is not None:
     df = len(doc_ids)
     if CASSANDRA_ENABLED:
@@ -39,6 +44,5 @@ if current_word is not None:
     else:
         print(f"{current_word}\t{df}")
 
-# Close Cassandra connection
-if CASSANDRA_ENABLED:
-    cluster.shutdown()
+
+cluster.shutdown()
